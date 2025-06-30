@@ -1,0 +1,258 @@
+openapi: "3.0.1"
+info:
+  title: API Title
+  version: "1.0"
+servers:
+  - url: https://${SampleApiGW}.execute-api.${AWS::Region}.amazonaws.com/${ENV}/
+
+paths:
+  /create-user:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  example: "dummy@test.com"
+              required:
+                - email
+      responses:
+        "200":
+          description: "成功時のレスポンス"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  user:
+                    type: "object"
+                    properties:
+                      userName:
+                        type: "string"
+                        example: "95609ed8-5b01-4b9a-896a-6e44d2cfed61"
+                      userCreateDate:
+                        type: "string"
+                        example: "2023-12-24 02:44:12.644000+00:00"
+                      userStatus:
+                        type: "string"
+                        example: "FORCE_CHANGE_PASSWORD"
+                    required:
+                      - userName
+                      - userCreateDate
+                      - userStatus
+                required:
+                  - user
+        "500":
+          description: "エラー"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResult"
+      tags:
+        - UserCretification
+  /init-password:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  example: "dummy@test.com"
+                newPassword:
+                  type: "string"
+                  example: "Password"
+                session:
+                  type: "string"
+                  example: "dummy session"
+              required:
+                - email
+                - newPassword
+                - session
+      responses:
+        '200':
+          description: "成功時のレスポンス"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  authenticationResult:
+                    $ref: "#/components/schemas/AuthenticationResult"
+                required:
+                  - authenticationResult
+        "500":
+          description: "エラー"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResult"
+      tags:
+        - UserCretification
+  /login:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  example: "dummy@test.com"
+                password:
+                  type: "string"
+                  example: "Password"
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: "成功時のレスポンス"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  challengeName:
+                    type: "string"
+                    example: "challenge"
+                  authenticationResult:
+                    $ref: "#/components/schemas/AuthenticationResult"
+                  session:
+                    type: "string"
+                    example: "session"
+        "500":
+          description: "エラー"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResult"
+      tags:
+        - UserCretification
+  /token-reflesh:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                refleshToken:
+                  type: "string"
+                  example: "token"
+              required:
+                - refleshToken
+      responses:
+        '200':
+          description: "成功時のレスポンス"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  authenticationResult:
+                    type: "object"
+                    properties:                      
+                      token:
+                        type: "string"
+                        example: "dummy IdToken"
+                      expiresIn:
+                        type: "number"
+                        example: 300
+                      tokenType:
+                        type: "string"
+                        example: "Bearer"
+                    required:
+                      - token
+                      - expiresIn
+                      - tokenType
+                required:
+                  - authenticationResult
+        "500":
+          description: "エラー"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResult"
+      tags:
+        - UserCretification
+  /logout:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  example: "dummy@test.com"
+              required:
+                - email
+      responses:
+        '200':
+          description: "成功時のレスポンス"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:                  
+                  message:
+                    type: "string"
+                    example: "message"
+                required:
+                  - message
+        "500":
+          description: "エラー"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResult"
+      tags:
+        - UserCretification
+components:
+  schemas:
+    AuthenticationResult:
+      type: "object"
+      properties:
+        refreshToken:
+          type: "string"
+          example: "dummy RefreshToken"
+        token:
+          type: "string"
+          example: "dummy IdToken"
+        expiresIn:
+          type: "number"
+          example: 300
+        tokenType:
+          type: "string"
+          example: "Bearer"
+      required:
+        - refreshToken
+        - token
+        - expiresIn
+        - tokenType
+    ErrorResult:
+      type: "object"
+      properties:
+        errorCode:
+          type: "string"
+          example: "EXPxxx9999"
+        message:
+          type: "string"
+          example: "error message"
+      required:
+        - errorCode
+        - message
+

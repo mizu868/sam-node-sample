@@ -1,0 +1,98 @@
+# More information about the configuration file can be found here:
+# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-config.html
+version: 0.1
+default:
+  global:
+    parameters:
+      stack_name: sample-sam-app
+  build:
+    parameters:
+      cached: false
+      parallel: true
+  local_start_api:
+    parameters:
+      profile: localstack
+      warm_containers: EAGER
+      parameter_overrides: 
+        sampleEnv="test env string"
+  local_start_lambda:
+    parameters:
+      warm_containers: EAGER
+  sync:
+    parameters:
+      watch: true
+      stack_name: sampleBackendSyncStack
+      confirm_changeset: true
+      resolve_s3: true
+      s3_prefix: sample-sam-app-sync
+      region: ap-northeast-1
+      profile: samAdmin
+      parameter_overrides: 
+        ENV="sync"
+        sampleEnv="test env string"
+dev:
+  global:
+    parameters:
+      stack_name: sample-sam-app-build-dev
+  validate:
+    parameters:
+      lint: true
+  deploy:
+    parameters:
+      capabilities: CAPABILITY_IAM
+      confirm_changeset: true
+      resolve_s3: true
+      s3_prefix: sample-sam-app-dev
+      region: ap-northeast-1
+      parameter_overrides: 
+        ENV="dev"
+        sampleEnv="test env string"
+      image_repositories: []
+  package:
+    parameters:
+      resolve_s3: true
+
+prd:
+  global:
+    parameters:
+      stack_name: sample-sam-app
+  validate:
+    parameters:
+      lint: true
+  deploy:
+    parameters:
+      capabilities: CAPABILITY_IAM
+      confirm_changeset: true
+      resolve_s3: true
+      s3_prefix: sample-sam-app
+      region: ap-northeast-1
+      parameter_overrides:
+        ENV="prd"
+        sampleEnv="test env string"
+      image_repositories: []
+  package:
+    parameters:
+      resolve_s3: true
+
+buildDeploy:
+  global:
+    parameters:
+      stack_name: sample-sam-build-stack
+  validate:
+    parameters:
+      lint: true
+  deploy:
+    parameters:
+      capabilities: CAPABILITY_NAMED_IAM
+      confirm_changeset: true
+      resolve_s3: true
+      s3_prefix: sample-build-pipeline
+      region: ap-northeast-1
+      profile: samAdmin
+      parameter_overrides: 
+        ENV="dev"
+      image_repositories: []
+      template_file: buildTemplate.yaml
+  package:
+    parameters:
+      resolve_s3: true

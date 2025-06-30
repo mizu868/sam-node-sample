@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20.x
+    commands:
+      # Upgrading SAM CLI to latest version
+      # - pip3 install --upgrade aws-sam-cli
+      # - git switch $ENV
+      # - git branch
+  pre_build:
+    commands:
+      - sam --version
+      - sam validate
+  build:
+    commands:
+      - echo SAM Application Build started on `date`
+      - sam build
+      - sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --config-env $ENV
+  post_build:
+    commands:
+      - echo Build completed on `date`

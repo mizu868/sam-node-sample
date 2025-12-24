@@ -264,7 +264,7 @@ Resources:
         detail-type:
           - "CodeCommit Repository State Change"
         resources:
-          - arn:aws:codecommit:ap-northeast-1:633977121599:sam-node-sample
+          - arn:aws:codecommit:ap-northeast-1:xxxxxxxxxxxx:sam-node-sample
         detail:
           event:
             - "referenceUpdated"
